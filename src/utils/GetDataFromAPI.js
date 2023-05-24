@@ -14,6 +14,6 @@ export async function getTrendingsFromAPI(queryName) {
   const data = await axios
     .get(BASE_URL, options)
     .then(response => response.data);
-  console.log('TEST');
+  console.log('fetch');
   return data;
 }
