@@ -11,9 +11,10 @@ export function Movies() {
 
   useEffect(() => {
     if (query && query !== '') {
-      onFormSubmit();
+      getMovieByName(query.trim()).then(data => setMovies(data.results));
       console.log('TEST');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onInputChange = e => {
