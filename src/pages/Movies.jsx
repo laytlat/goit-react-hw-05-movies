@@ -1,28 +1,34 @@
-import { ListItem } from 'components/ListItem/ListItem';
+import ListItem from 'components/ListItem/ListItem';
 import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { getMovieByName } from 'utils/GetDataFromAPI';
 
-export function Movies() {
+export default function Movies() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [movies, setMovies] = useState([]);
+  const location = useLocation();
 
   const query = searchParams.get('query');
   const firstRender = useRef(true);
 
   useEffect(() => {
-    if (!firstRender.current) {
-      return;
-    }
-    if (query && query !== '') {
+    if (query && query !== '' && firstRender.current) {
       getMovieByName(query.trim()).then(data => setMovies(data.results));
       firstRender.current = false;
     }
   }, [query]);
 
   const onInputChange = e => {
-    setSearchParams({ query: e.currentTarget.value });
+    if (firstRender.current) {
+      firstRender.current = false;
+    }
+    const { value } = e.currentTarget;
+    if (value === '') {
+      return setSearchParams({});
+    }
+    setSearchParams({ query: value });
   };
+
   const onFormSubmit = e => {
     if (e) {
       e.preventDefault();
@@ -42,7 +48,16 @@ export function Movies() {
       <ul>
         {movies.map(movie => {
           const { id, title, name } = movie;
-          return <ListItem key={id} id={id} title={title} name={name} />;
+          return (
+            <ListItem
+              propState={{ from: location }}
+              path={`${id}`}
+              key={id}
+              id={id}
+              title={title}
+              name={name}
+            />
+          );
         })}
       </ul>
     </>

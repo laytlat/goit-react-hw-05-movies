@@ -1,9 +1,11 @@
-import { ListItem } from 'components/ListItem/ListItem';
+import ListItem from 'components/ListItem/ListItem';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getTrendingsFromAPI } from 'utils/GetDataFromAPI';
 
-export function Home() {
+export default function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const location = useLocation();
   useEffect(() => {
     getTrendingsFromAPI().then(data => setTrendingMovies(data.results));
   }, []);
@@ -13,7 +15,16 @@ export function Home() {
       <ul>
         {trendingMovies.map(movie => {
           const { id, title, name } = movie;
-          return <ListItem key={id} id={id} title={title} name={name} />;
+          return (
+            <ListItem
+              propState={{ from: location }}
+              path={`movies/${id}`}
+              key={id}
+              id={id}
+              title={title}
+              name={name}
+            />
+          );
         })}
       </ul>
     </div>

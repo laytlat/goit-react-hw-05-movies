@@ -1,11 +1,14 @@
 import { MovieCard } from 'components/MovieCard/MovieCard';
-import { useEffect, useState } from 'react';
-import { Link, Outlet, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { getMovieById } from 'utils/GetDataFromAPI';
 
-export function MovieDetails() {
+export default function MovieDetails() {
   const [movie, setMovie] = useState({});
   const { movieId } = useParams();
+  const location = useLocation();
+  const backLink = useRef(location.state?.from ?? '/movies');
+
   useEffect(() => {
     getMovieById(movieId).then(data => setMovie(data));
   }, [movieId]);
@@ -14,6 +17,7 @@ export function MovieDetails() {
 
   return (
     <>
+      <Link to={backLink.current}>Go back</Link>
       <MovieCard
         image={poster_path}
         title={title ?? name}
@@ -21,11 +25,7 @@ export function MovieDetails() {
         genres={genres}
         rating={vote_average}
       ></MovieCard>
-      <div>
-        <h4>Additional information</h4>
-        <Link to="cast">Cast</Link>
-        <Link to="reviews">Reviews</Link>
-      </div>
+
       <Outlet />
     </>
   );
