@@ -1,5 +1,5 @@
 import { ListItem } from 'components/ListItem/ListItem';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getMovieByName } from 'utils/GetDataFromAPI';
 
@@ -8,14 +8,17 @@ export function Movies() {
   const [movies, setMovies] = useState([]);
 
   const query = searchParams.get('query');
+  const firstRender = useRef(true);
 
   useEffect(() => {
+    if (!firstRender.current) {
+      return;
+    }
     if (query && query !== '') {
       getMovieByName(query.trim()).then(data => setMovies(data.results));
-      console.log('TEST');
+      firstRender.current = false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [query]);
 
   const onInputChange = e => {
     setSearchParams({ query: e.currentTarget.value });
